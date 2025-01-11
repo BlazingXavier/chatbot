@@ -8,6 +8,7 @@ import streamlit as st
 import random
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
+import numpy as np
 import pandas as pd
 import pyarrow as pa
 
@@ -42,23 +43,27 @@ x = vectorizer.fit_transform(patterns)
 y = tags
 clf.fit(x, y)
 
+# Define a function for the chatbot response
 def chatbot(input_text):
     input_text = vectorizer.transform([input_text])
-    tag = clf.predict(input_text)[0]
-    response_found = False  # Track if a response is found
+    predicted_probabilities = clf.predict_proba(input_text)
+    predicted_class_index = np.argmax(predicted_probabilities)
+    predicted_class_probability = predicted_probabilities[0][predicted_class_index]
     
-    for intent in intents:
-        if intent['tag'] == tag:
-            response = random.choice(intent['responses'])
-            response_found = True
-            break
-    
-    # If no response was found, return a default response
-    if not response_found:
-        response = "Sorry, I didn't understand that. Could you please rephrase?"
-    
+    # Set a threshold for confidence level (e.g., 0.5)
+    confidence_threshold = 0.5
+
+    if predicted_class_probability < confidence_threshold:
+        response = "Sorry, I didn't quite understand that. Could you please rephrase?"
+    else:
+        tag = clf.classes_[predicted_class_index]
+        for intent in intents:
+            if intent['tag'] == tag:
+                response = random.choice(intent['responses'])
+                break
+
     return response
-        
+
 counter = 0
 
 def main():
