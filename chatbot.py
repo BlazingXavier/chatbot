@@ -10,9 +10,15 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 import pandas as pd
 import pyarrow as pa
+
+# Ensure SSL context is set
 ssl._create_default_https_context = ssl._create_unverified_context
-nltk.data.path.append(os.path.abspath("nltk_data"))
-nltk.download('punkt')
+
+# Attempt to download 'punkt' only if not already downloaded
+try:
+    nltk.data.find('tokenizers/punkt')
+except LookupError:
+    nltk.download('punkt')
 
 # Load intents from the JSON file
 file_path = os.path.abspath("./intents.json")
@@ -31,7 +37,7 @@ for intent in intents:
         tags.append(intent['tag'])
         patterns.append(pattern)
 
-# training the model
+# Training the model
 x = vectorizer.fit_transform(patterns)
 y = tags
 clf.fit(x, y)
@@ -68,7 +74,6 @@ def main():
         user_input = st.text_input("You:", key=f"user_input_{counter}")
 
         if user_input:
-
             # Convert the user input to a string
             user_input_str = str(user_input)
 
@@ -127,7 +132,7 @@ def main():
 
         st.subheader("Conclusion:")
 
-        st.write("In this project, a chatbot is built that can understand and respond to user input based on intents. The chatbot was trained using NLP and Logistic Regression, and the interface was built using Streamlit. This project can be extended by adding more data, using more sophisticated NLP techniques, deep learning algorithms.")
+        st.write("In this project, a chatbot is built that can understand and respond to user input based on intents. The chatbot was trained using NLP and Logistic Regression, and the interface was built using Streamlit. This project can be extended by adding more data, using more sophisticated NLP techniques, and deep learning algorithms.")
 
 if __name__ == '__main__':
     main()
