@@ -3,16 +3,10 @@ import json
 import datetime
 import csv
 import nltk
-import ssl
-import streamlit as st
 import random
+import streamlit as st
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
-import pandas as pd
-import pyarrow as pa
-
-# Ensure SSL context is set
-ssl._create_default_https_context = ssl._create_unverified_context
 
 # Attempt to download 'punkt' only if not already downloaded
 try:
@@ -58,11 +52,8 @@ def chatbot(input_text):
         response = "Sorry, I didn't understand that. Could you please rephrase?"
     
     return response
-        
-counter = 0
 
 def main():
-    global counter
     st.title("Intents of Chatbot using NLP")
 
     # Create a sidebar menu with options
@@ -79,18 +70,17 @@ def main():
                 csv_writer = csv.writer(csvfile)
                 csv_writer.writerow(['User Input', 'Chatbot Response', 'Timestamp'])
 
-        counter += 1
-        user_input = st.text_input("You:", key=f"user_input_{counter}")
+        user_input = st.text_input("You:")
 
         if user_input:
             # Convert the user input to a string
             user_input_str = str(user_input)
 
             response = chatbot(user_input)
-            st.text_area("Chatbot:", value=response, height=120, max_chars=None, key=f"chatbot_response_{counter}")
+            st.text_area("Chatbot:", value=response, height=120)
 
             # Get the current timestamp
-            timestamp = datetime.datetime.now().strftime(f"%Y-%m-%d %H:%M:%S")
+            timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
             # Save the user input and chatbot response to the chat_log.csv file
             with open('chat_log.csv', 'a', newline='', encoding='utf-8') as csvfile:
@@ -115,32 +105,11 @@ def main():
                 st.markdown("---")
 
     elif choice == "About":
-        st.write("The goal of this project is to create a chatbot that can understand and respond to user input based on intents. The chatbot is built using Natural Language Processing (NLP) library and Logistic Regression, to extract the intents and entities from user input. The chatbot is built using Streamlit, a Python library for building interactive web applications.")
-
-        st.subheader("Project Overview:")
-
-        st.write("""
-        The project is divided into two parts:
-        1. NLP techniques and Logistic Regression algorithm is used to train the chatbot on labeled intents and entities.
-        2. For building the Chatbot interface, Streamlit web framework is used to build a web-based chatbot interface. The interface allows users to input text and receive responses from the chatbot.
-        """)
-
+        st.write("This project creates a chatbot that understands and responds to user input based on intents using Natural Language Processing and Logistic Regression. The interface is built with Streamlit.")
         st.subheader("Dataset:")
-
-        st.write("""
-        The dataset used in this project is a collection of labelled intents and entities. The data is stored in a list.
-        - Intents: The intent of the user input (e.g. "greeting", "budget", "about")
-        - Entities: The entities extracted from user input (e.g. "Hi", "How do I create a budget?", "What is your purpose?")
-        - Text: The user input text.
-        """)
-
-        st.subheader("Streamlit Chatbot Interface:")
-
-        st.write("The chatbot interface is built using Streamlit. The interface includes a text input box for users to input their text and a chat window to display the chatbot's responses. The interface uses the trained model to generate responses to user input.")
-
+        st.write("The dataset consists of labelled intents and responses, used to train the chatbot.")
         st.subheader("Conclusion:")
-
-        st.write("In this project, a chatbot is built that can understand and respond to user input based on intents. The chatbot was trained using NLP and Logistic Regression, and the interface was built using Streamlit. This project can be extended by adding more data, using more sophisticated NLP techniques, and deep learning algorithms.")
+        st.write("This project demonstrates how NLP techniques and machine learning can be used to build a simple chatbot.")
 
 if __name__ == '__main__':
     main()
