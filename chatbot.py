@@ -45,11 +45,23 @@ clf.fit(x, y)
 def chatbot(input_text):
     input_text = vectorizer.transform([input_text])
     tag = clf.predict(input_text)[0]
+    
+    # Flag to check if any response was found
+    response_found = False
+    
+    # Loop through intents to find a match
     for intent in intents:
         if intent['tag'] == tag:
             response = random.choice(intent['responses'])
-            return response
-        
+            response_found = True
+            break
+    
+    # If no response is found, set a default response
+    if not response_found:
+        response = "I'm sorry, I didn't quite understand that. Could you please rephrase?"
+    
+    return response
+
 counter = 0
 
 def main():
@@ -111,7 +123,7 @@ def main():
 
         st.subheader("Project Overview:")
 
-        st.write("""
+        st.write(""" 
         The project is divided into two parts:
         1. NLP techniques and Logistic Regression algorithm is used to train the chatbot on labeled intents and entities.
         2. For building the Chatbot interface, Streamlit web framework is used to build a web-based chatbot interface. The interface allows users to input text and receive responses from the chatbot.
